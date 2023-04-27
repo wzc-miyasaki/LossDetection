@@ -1,4 +1,4 @@
-from Bucket import Bucket
+from Bucket import *
 import hashlib
 import uuid
 from PacketAnalyzer import *
@@ -23,6 +23,8 @@ class BucketTable:
         self.table = []
         self.saturationFlag = False
         self.hashAlgOption = [hashlib.sha1, hashlib.sha256, hashlib.md5]
+        self.servip = ""
+        self.clientip = ""
 
         self.InitHashFunctions(row)
         self.InitTable(row, bktSize)
@@ -49,10 +51,23 @@ class BucketTable:
             for j in range(c):
                 self.table[i].append(Bucket())
 
-    def ReadPCAP(self, path):
+    def SetServerAndClientIP(self, ips, ipc):
+        if ips == ipc:
+            print("[Error]:  server & client IP cannot be same")
+            return
+        self.servip = ips
+        self.clientip = ipc
+
+    def ReadPCAP(self, path, filter=""):
+        if self.servip == "" or self.clientip == "":
+            print("[Error] Server IP & Client IP address is not set up!\n\n")
+            return
+
         analyzer = PacketAnalyzer(TSharkPATH)
+        analyzer.SetFilter(filter)
         capture = analyzer.OpenPCAP(path)
-        # Insert
+
+        # Insert each packet to the table
         for packet in capture:
             self.InsertToAllRows(packet)
 
@@ -60,10 +75,18 @@ class BucketTable:
 
     def Insert(self, packet, row, col):
         bucket = self.table[row][col]
+
         if "TCP" in packet:
-            bucket.InsertTCP(packet)
+            if self.IsServer(packet):
+                bucket.InsertTCPServer(packet)
+            elif self.IsClient(packet):
+                bucket.InsertTCPClient(packet)
+
         elif "UDP" in packet:
-            bucket.InsertUDP(packet)
+            if self.IsServer(packet):
+                bucket.InsertUDPServer(packet)
+            elif self.IsClient(packet):
+                bucket.InsertUDPClient(packet)
         else:
             return
 
@@ -82,6 +105,10 @@ class BucketTable:
                 col = self.hashSrcKey(key, row)
                 self.Insert(pkt, row, col)
 
+    def IsClient(self, pkt):
+        return pkt.ip.src == self.clientip
 
+    def IsServer(self, pkt):
+        return pkt.ip.src == self.servip
 
 

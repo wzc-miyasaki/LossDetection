@@ -27,11 +27,36 @@ class Bucket:
         self._InitUDPcounters()
 
 
-    def InsertTCP(self, pkt):
+    def InsertTCPServer(self, pkt):
+        self.tcpCts["s0"] += Ct_s0(pkt)
+        self.tcpCts["sd"] += Ct_sd(pkt)
+        self.tcpCts["sf"] += Ct_sf(pkt)
+        self.tcpCts["sa1"] += Ct_sa1(pkt)
+        self.tcpCts["sa2"] += Ct_sa2(pkt)
+        self.tcpCts["sa3"] += Ct_sa3(pkt)
 
+
+    def InsertTCPClient(self, pkt):
+        self.tcpCts["csack"] += Ct_sack(pkt)
         self.tcpCts["c0"] += Ct_c0(pkt)
-        return
+        self.tcpCts["cd"] += Ct_cd(pkt)
+        self.tcpCts["cf"] += Ct_cf(pkt)
+        self.tcpCts["ca1"] += Ct_ca1(pkt)
+        self.tcpCts["ca2"] += Ct_ca2(pkt)
+        self.tcpCts["ca3"] += Ct_ca3(pkt)
 
-    def InsertUDP(self, pkt):
-        # print("udp")
-        return
+
+    def InsertUDPServer(self, pkt, d=20):
+        self.udpCts["sa1"] += Cu_payloadSz(pkt, 0)
+        self.udpCts["sa2"] += Cu_payloadSz(pkt, d)
+        self.udpCts["sa3"] += Cu_payloadSz(pkt, 140)
+        self.udpCts["sa4"] += Cu_payloadSz(pkt, 1100)
+
+
+    def InsertUDPClient(self, pkt, d=20):
+        self.udpCts["ca1"] += Cu_payloadSz(pkt, 0)
+        self.udpCts["ca2"] += Cu_payloadSz(pkt, d)
+        self.udpCts["ca3"] += Cu_payloadSz(pkt, 140)
+        self.udpCts["ca4"] += Cu_payloadSz(pkt, 1100)
+
+

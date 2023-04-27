@@ -13,11 +13,8 @@ class PacketAnalyzer:
     def SetTSharkPath(self, path):
         self.tSharkPath = path
 
-    def SetFilter(self, paraList):
-        if len(paraList) > 0:
-            self.filter = "".join(paraList)
-        else:
-            self.filter = ""
+    def SetFilter(self, filter):
+        self.filter = filter
 
 
     def OpenPCAP(self, path):
@@ -30,16 +27,17 @@ class PacketAnalyzer:
 def test():
     # Specify the path to your PCAP file
     pcap_file = 'Wireshark_802_11.pcap'
+    pcap_sample = 'sample.pcap'
 
     # 1. Open the PCAP file using pyshark
     test = PacketAnalyzer(TSharkPATH)
-    test.SetFilter(["tcp"])
-    capture = test.OpenPCAP(pcap_file)
-    packet = capture[5]
-    try:
-        print(packet.tcp.payload)
-    except:
-        print("No Payload")
+    test.SetFilter("tcp && tcp.options.sack.count == 1")
+    capture = test.OpenPCAP(pcap_sample)
+    ct = 0
+    for p in capture:
+        if hasattr(p.tcp, "options_sack_count"):
+            ct += int(p.tcp.options_sack_count)
+    print(ct)
 
 
 
