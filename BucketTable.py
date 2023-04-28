@@ -4,9 +4,8 @@ import uuid
 from Counter import UpdateMin
 from PacketAnalyzer import *
 import time
+from ReadFile import *
 
-def is_zero(f, tolerance=1e-6):
-    return abs(f) < tolerance
 
 def GetSrcKey(pkt):
     srcIP = pkt.ip.src
@@ -17,7 +16,6 @@ def GetSrcKey(pkt):
         srcPort = str(pkt.tcp.srcport)
     return srcIP, srcPort
 
-# 0-83,  83 - 375, 375 - 1100, 1100+
 def calculateSpdSD(payloadSz , interval):
     a0 = interval[0]
     a1 = interval[1]
@@ -47,14 +45,15 @@ class BucketTable:
         self.hashList = []
         self.table = []
         self.hashAlgOption = [hashlib.sha1, hashlib.sha256, hashlib.md5]
-        self.servip = ""
-        self.clientip = ""
+        self.target_ip = ""
         self.pktCountC = 0  # client packet number
         self.pktCountS = 0  # server packet number
         self.pktTotal = 0
         self.sampleInterval = 1/16.0
         self.prevSatTime = None
         self.diffT = 0.0
+        self.tcp_csv_file = "tcp.csv"
+        self.udp_csv_file = "udp.csv"
 
         self.InitHashFunctions(row)
         self.InitTable(row, bktSize)
@@ -81,17 +80,19 @@ class BucketTable:
             for j in range(c):
                 self.table[i].append(Bucket())
 
-    def SetServerAndClientIP(self, ips, ipc):
-        if ips == ipc:
-            print("[Error]:  server & client IP cannot be same")
-            return
-        self.servip = ips
-        self.clientip = ipc
+    def SetTargetIP(self, ip):
+        self.target_ip = ip
+
+    def SetCSVPath(self, tcp, udp):
+        self.tcp_csv_file = tcp
+        self.udp_csv_file = udp
 
     def ReadPCAP(self, path, filter=""):
-        if self.servip == "" or self.clientip == "":
-            print("[Error] Server IP & Client IP address is not set up!\n\n")
+        if self.target_ip == "":
+            print("target IP is not set")
             return
+        else:
+            print(f"[Target IP] : {self.target_ip}\n")
 
         analyzer = PacketAnalyzer(TSharkPATH)
         analyzer.SetFilter(filter)
@@ -134,9 +135,8 @@ class BucketTable:
             elif self.IsClient(pkt):
                 self.pktCountC += 1
 
-        if(canInsert):
+        if canInsert:
             positions = []
-            notSaturated = True
 
             # Insert
             for row in range(self.rowNumber):
@@ -171,7 +171,10 @@ class BucketTable:
                 # feature extraction
                 if not is_zero(self.diffT) and minCtList is not None:
                     features = self.ExtractFeatures(pkt, minCtList)
-                    print(f"extract feature:  {features}")
+                    if hasTcp :
+                        writeExcel(features , self.tcp_csv_file)
+                    elif hasUdp :
+                        writeExcel(features , self.udp_csv_file)
 
 
     def ResetBkt(self, positions):
@@ -180,10 +183,10 @@ class BucketTable:
 
 
     def IsClient(self, pkt):
-        return pkt.ip.src == self.clientip
+        return pkt.ip.src == self.target_ip
 
     def IsServer(self, pkt):
-        return pkt.ip.src == self.servip
+        return pkt.ip.dst == self.target_ip
 
 
     def Query(self, positions, protocol):

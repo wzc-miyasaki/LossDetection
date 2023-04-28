@@ -1,0 +1,19 @@
+
+# LOW
+./sample_one/low/0.pcapng
+./sample_one/low/01.pcapng
+./sample_one/low/02.pcapng
+./sample_one/low/under5percent.pcapng
+./sample_one/low/under5percent1.pcapng
+
+#MIDDLE
+./sample_one/middle/10.pcapng
+./sample_one/middle/19.pcapng
+./sample_one/middle/middle6.pcapng
+
+#HIGH
+./sample_one/high/20.pcapng
+./sample_one/high/30.pcapng
+./sample_one/high/50.pcapng
+./sample_one/high/70.pcapng
+./sample_one/high/80.pcapng
