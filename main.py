@@ -22,8 +22,9 @@ def main():
 
     target = GetListOfpcapPaths(path)
     for pcap in target:
+        print(f">>>>> Start With {pcap}<<<<<")
         t.ReadPCAP(pcap)
-        print(f">>>>> DONE With {pcap}<<<<<")
+        print(f">>>>> DONE With {pcap}<<<<<\n")
 
 if __name__ == '__main__':
     main()

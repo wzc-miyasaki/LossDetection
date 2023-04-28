@@ -91,8 +91,6 @@ class BucketTable:
         if self.target_ip == "":
             print("target IP is not set")
             return
-        else:
-            print(f"[Target IP] : {self.target_ip}\n")
 
         analyzer = PacketAnalyzer(TSharkPATH)
         analyzer.SetFilter(filter)
