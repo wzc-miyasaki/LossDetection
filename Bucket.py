@@ -4,8 +4,8 @@ from Counter import *
 
 TCP_COUNTER_TYPE = ("csack", "c0", "cd", "cf", "s0", "sd", "sf", "ca1", "ca2", "ca3", "sa1", "sa2", "sa3")
 UDP_COUNTER_TYPE = ("ca1", "ca2", "ca3", "ca4", "sa1", "sa2", "sa3", "sa4")
-
-
+TCP_FEATURES = ("csack" , "cpp", "spp", "spdsd", "spdsp")
+UDP_FEATURES = ("ca1" , "ca2" , "spdsd", "spdsp")
 
 class Bucket:
     def __init__(self):
@@ -59,4 +59,8 @@ class Bucket:
         self.udpCts["ca3"] += Cu_payloadSz(pkt, 140)
         self.udpCts["ca4"] += Cu_payloadSz(pkt, 1100)
 
-
+    def GetCtVal(self, protocol, attr):
+        if protocol == "udp":
+            return self.udpCts[attr]
+        elif protocol == "tcp":
+            return self.tcpCts[attr]

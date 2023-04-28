@@ -1,4 +1,6 @@
 from BucketTable import BucketTable
+from BucketTable import calculateSpdSD
+
 from Bucket import Bucket
 
 # cf test
@@ -64,20 +66,18 @@ def test4():
         print("test faild")
 
 
-# Test UDP insertion
+# Test saturation event
 def test5():
     pcap_file = 'Wireshark_802_11.pcap'
     file2 = 'sample.pcap'
     t = BucketTable(row=5, bktSize=10)
-    t.SetServerAndClientIP(ipc="192.168.1.109", ips="192.168.1.100")
-    t.ReadPCAP(pcap_file)
+    t.SetServerAndClientIP(ips="23.43.124.211", ipc="10.26.85.14")
+    t.ReadPCAP(file2)
 
-    try:
-        r = 2
-        for c in range(10):
-            print(f"{t.table[r][c].udpCts['ca1']}  {t.table[r][c].udpCts['ca2']}  {t.table[r][c].udpCts['ca3']}  {t.table[r][c].udpCts['ca4']}")
-    except:
-        print("test faild")
+def test6():
+    print(calculateSpdSD(366, [0, 83, 375, 1100]))
+
+
 
 if __name__ == '__main__':
     test5()

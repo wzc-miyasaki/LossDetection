@@ -31,13 +31,17 @@ def test():
 
     # 1. Open the PCAP file using pyshark
     test = PacketAnalyzer(TSharkPATH)
-    test.SetFilter("tcp && tcp.options.sack.count == 1")
-    capture = test.OpenPCAP(pcap_sample)
+    test.SetFilter("")
+    capture = test.OpenPCAP(pcap_file)
     ct = 0
+    cp = 0
     for p in capture:
-        if hasattr(p.tcp, "options_sack_count"):
-            ct += int(p.tcp.options_sack_count)
+        if "IP" not in p:
+            ct += 1
+        if "IP" in p:
+            cp += 1
     print(ct)
+    print(cp)
 
 
 

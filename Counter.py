@@ -100,3 +100,13 @@ def Cu_payloadSz(packet, boundary):
     if hasattr(packet.udp, "payload"):
         res = len(packet.udp.payload) > boundary
     return int(res)
+
+
+# Update
+def UpdateMin(a, b):
+    if a == -1:
+        return b
+    elif b == -1:
+        return a
+    else:
+        return min(a, b)
