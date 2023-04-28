@@ -1,5 +1,10 @@
 # README
 
+#### Library
+
+- Pyshark
+
+
 
 #### Pyshark 
 
@@ -13,26 +18,47 @@ pyshark.FileCapture(path, tshark_path=tShark_exe_Path)
 
 In my case, the tshark.exe is located at `"C:\Applications\Wireshark\tshark.exe"`
 
+&nbsp;
 
-&nbsp;  
-&nbsp;  
+&nbsp;
 
 #### How to start the feature extraction
 
 ###### 1. Create a `BucketTable` instance
 
 ```python
-pcap_file = 'Wireshark_802_11.pcap'
+tcp = "./tcp.csv"
+udp = "./udp.csv"
+path = 'target_files.txt'
+
 t = BucketTable(row=5, bktSize=10)
-t.SetServerAndClientIP(ips="23.43.124.211", ipc="10.26.85.14")
-t.ReadPCAP(file2)
+t.SetTargetIP("192.168.1.11")
+t.SetCSVPath(tcp, udp)
+
+target = GetListOfpcapPaths(path)
+for pcap in target:
+    t.ReadPCAP(pcap)
+    print(f">>>>> DONE With {pcap}<<<<<")
 ```
 
-- A pcap file must be provided for BucketTable.  
+A bucket table is a `n` ✖️`m` 2D array. Each row of the table will hold `buckets`. Each bucket maintains the counters for TCP packets and UDP packets. 
 
-1. A bucket table is a `n` ✖️`m` 2D array. Each row of the table will hold `buckets`. Each bucket maintains the counters for TCP packets and UDP packets. 
 
-2. It's necessary to set the "server IP" and "client IP" before reading pcap file. The reason is that the table will examine the ip address to determine whether it is a packet from the client or the server.
+
+1. Couple of parameters are required to be setup : 
+    - `tcp` :  the csv file path using for holding the the output of TCP packet feature extractions
+    - `udp` :   the csv file path using for holding the the output of UDPpacket feature extractions
+    - `path` :  It's a txt file containing a list of the PCAP file paths. Our code will visit each pcap file recoreded in the txt file, and generate the output to the tcp.csv & udp.csv
+
+&nbsp;
+
+2. It's necessary to set the "**target IP**" address before reading pcap file. The reason is that the table will examine the ip address to determine whether it is a packet from the client or the server.
+
+    - If the the source ip matches with the target IP, it is a **client packet**
+
+    - If the the destination ip matches with the target IP, it is a **server packet**
+
+&nbsp;
 
 3. The `ReadPCAP` will get started to insert all the packet into the bucket table. 
 
