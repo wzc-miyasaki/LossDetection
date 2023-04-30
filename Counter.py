@@ -65,13 +65,13 @@ def Ct_ca(packet, interval_st, interval_ed):
 ##  UDP
 def Cu_payloadSz(packet, boundary):
     ret = len(packet.udp.payload)
-    if ret > 0 and ret <= boundary:
+    if 0 < ret <= boundary:
         return 1
-    elif ret > boundary and ret <= 140:
+    elif boundary < ret <= 140:
         return 2
-    elif ret > 140 and ret <= 1100:
+    elif 140 < ret <= 1100:
         return 3
-    elif ret > 1100 and ret <= 1500:
+    elif 1100 < ret <= 1500:
         return 4
     return 0
 
