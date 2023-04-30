@@ -51,47 +51,15 @@ def Ct_sd(packet):
 def Ct_sf(packet):
     return Ct_cf(packet)
 
-
-def Ct_ca1(packet):
+def Ct_ca(packet, interval_st, interval_ed):
     """
-        payload interval [0, 83]
-        """
+    If the payload size is less than interval_ed but greater than interval_st, then return 1,
+    otherwise return 0.
+    """
     res = False
     if hasattr(packet.tcp, "payload"):
-        res = (len(packet.tcp.payload) > 0)
+        res = (len(packet.tcp.payload) > interval_st) and (len(packet.tcp.payload) < interval_ed)
     return int(res)
-
-
-def Ct_ca2(packet):
-    """
-        payload interval [83, 375]
-        """
-    res = False
-    if hasattr(packet.tcp, "payload"):
-        res = (len(packet.tcp.payload) > 82)
-    return int(res)
-
-
-def Ct_ca3(packet):
-    """
-            payload interval [375, 1100]
-            """
-    res = False
-    if hasattr(packet.tcp, "payload"):
-        res = (len(packet.tcp.payload) > 374)
-    return int(res)
-
-
-def Ct_sa1(packet):
-    return Ct_ca1(packet)
-
-
-def Ct_sa2(packet):
-    return Ct_ca2(packet)
-
-
-def Ct_sa3(packet):
-    return Ct_ca3(packet)
 
 
 ##  UDP
