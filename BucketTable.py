@@ -5,7 +5,7 @@ from Counter import UpdateMin
 from PacketAnalyzer import *
 import time
 from ReadFile import *
-
+import datetime
 
 def GetSrcKey(pkt):
     srcIP = pkt.ip.src
@@ -52,6 +52,7 @@ class BucketTable:
         self.sampleInterval = 1/16.0
         self.prevSatTime = None
         self.diffT = 0.0
+        self.last_ten_thousand_time = None
         self.tcp_csv_file = "tcp.csv"
         self.udp_csv_file = "udp.csv"
 
@@ -100,7 +101,7 @@ class BucketTable:
         for packet in capture:
             self.InsertToAllRows(packet)
             self.pktTotal += 1
-
+            self.AnnounceReadingProgress()
         capture.close()
 
     def Insert(self, packet, row, col):
@@ -260,4 +261,12 @@ class BucketTable:
 
         return res
 
+    def AnnounceReadingProgress(self):
+        # Get the current time
+        current_time = datetime.datetime.now()
 
+        # Format and print the current time
+        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        if self.pktTotal % 10000 == 0 :
+            print(f"\t\t>>> >>> >>> {self.pktTotal} packets has been read so far [{formatted_time } s]")
