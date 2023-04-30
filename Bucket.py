@@ -46,18 +46,42 @@ class Bucket:
         self.tcpCts["ca3"] += Ct_ca3(pkt)
 
 
+    # def InsertUDPServer(self, pkt, d=20):
+    #     self.udpCts["sa1"] += Cu_payloadSz(pkt, 0)
+    #     self.udpCts["sa2"] += Cu_payloadSz(pkt, d)
+    #     self.udpCts["sa3"] += Cu_payloadSz(pkt, 140)
+    #     self.udpCts["sa4"] += Cu_payloadSz(pkt, 1100)
+    #
+    #
+    # def InsertUDPClient(self, pkt, d=20):
+    #     ret = Cu_payloadSz(pkt, d)
+    #     self.udpCts["ca1"] += Cu_payloadSz(pkt, 0)
+    #     self.udpCts["ca2"] += Cu_payloadSz(pkt, d)
+    #     self.udpCts["ca3"] += Cu_payloadSz(pkt, 140)
+    #     self.udpCts["ca4"] += Cu_payloadSz(pkt, 1100)
+
     def InsertUDPServer(self, pkt, d=20):
-        self.udpCts["sa1"] += Cu_payloadSz(pkt, 0)
-        self.udpCts["sa2"] += Cu_payloadSz(pkt, d)
-        self.udpCts["sa3"] += Cu_payloadSz(pkt, 140)
-        self.udpCts["sa4"] += Cu_payloadSz(pkt, 1100)
+        ret = Cu_payloadSz(pkt, d)
+        if ret == 1:
+            self.udpCts["sa1"] += 1
+        elif ret == 2:
+            self.udpCts["sa2"] += 1
+        elif ret == 3:
+            self.udpCts["sa3"] += 1
+        elif ret == 4:
+            self.udpCts["sa4"] += 1
 
 
     def InsertUDPClient(self, pkt, d=20):
-        self.udpCts["ca1"] += Cu_payloadSz(pkt, 0)
-        self.udpCts["ca2"] += Cu_payloadSz(pkt, d)
-        self.udpCts["ca3"] += Cu_payloadSz(pkt, 140)
-        self.udpCts["ca4"] += Cu_payloadSz(pkt, 1100)
+        ret = Cu_payloadSz(pkt, d)
+        if ret == 1:
+            self.udpCts["ca1"] += 1
+        elif ret == 2:
+            self.udpCts["ca2"] += 1
+        elif ret == 3:
+            self.udpCts["ca3"] += 1
+        elif ret == 4:
+            self.udpCts["ca4"] += 1
 
     def GetCtVal(self, protocol, attr):
         if protocol == "udp":

@@ -96,10 +96,16 @@ def Ct_sa3(packet):
 
 ##  UDP
 def Cu_payloadSz(packet, boundary):
-    res = False
-    if hasattr(packet.udp, "payload"):
-        res = len(packet.udp.payload) > boundary
-    return int(res)
+    ret = len(packet.udp.payload)
+    if ret > 0 and ret <= boundary:
+        return 1
+    elif ret > boundary and ret <= 140:
+        return 2
+    elif ret > 140 and ret <= 1100:
+        return 3
+    elif ret > 1100 and ret <= 1500:
+        return 4
+    return 0
 
 
 # Update
